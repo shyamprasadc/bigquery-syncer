@@ -1,0 +1,32 @@
+# Global configuration for the BigQuery syncer
+project: ${GCP_PROJECT_ID}
+dataset: your_bq_dataset
+location: US
+allow_schema_additions: true
+state_store: local  # local | gcs
+state_local_path: state/state.json
+state_gcs_bucket: ${GCS_STATE_BUCKET}
+state_gcs_prefix: ${GCS_STATE_PREFIX}
+
+temp_bucket: ${GCS_TEMP_BUCKET}
+default_timezone: UTC
+
+# Optional scheduling (used by APScheduler mode)
+schedule:
+  cron: "0 2 * * *"  # 2 AM daily
+
+mappings:
+  - name: users
+    mysql_table: users
+    bigquery_table: users
+    primary_keys: [id]
+    incremental_column: updated_at
+    mode: upsert  # append | upsert
+    backfill_start: 2020-01-01T00:00:00Z
+
+  - name: orders
+    mysql_table: orders
+    bigquery_table: orders
+    primary_keys: [order_id]
+    incremental_column: updated_at
+    mode: upsert
